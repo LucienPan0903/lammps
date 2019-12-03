@@ -1,0 +1,165 @@
+# Jianhua
+#Minimization of the SBA16
+#index of atoms: Si O_SS O_SH H_Framework H_CH4 C_CH4
+
+# ---------- Initialize Simulation --------------------- 
+clear 
+
+units real
+dimension 3
+boundary p p p
+
+#Atom style: contains bond and angles in our case
+atom_style full
+
+#Create map for the atoms which is used to determine the toplogy
+atom_modify map array
+
+# ---------- Create Atoms --------------------- 
+read_data SBA15_framework_30_10_100.24.data
+
+# ---------- Define Interatomic Potential --------------------- 
+#lj/cut/coul/long 12-6 with columbus force: for CH4 inter-atomic interaction
+#cut-off distance
+#enum AType{
+#    Si = 1,
+#    O_ss = 2,
+#    O_sh = 3,
+#    H_os = 4,
+#    H_methane = 5,
+#    C_methane = 6
+#};
+
+#class2 9-6 lj 12-6
+
+pair_style hybrid lj/class2/coul/long 15.0 lj/cut/coul/long 15.0 15.0
+
+pair_coeff 1 1 lj/class2/coul/long 186910.958224 0
+pair_coeff 2 2 lj/class2/coul/long 57412.472881 0
+pair_coeff 3 3 lj/class2/coul/long 22715.614089 0
+pair_coeff 4 4 lj/class2/coul/long 438.776809 0
+pair_coeff 1 2 lj/class2/coul/long 103590.638188 0
+pair_coeff 1 3 lj/class2/coul/long 65159.78204400001 0
+pair_coeff 1 4 lj/class2/coul/long 9056.058404 0
+pair_coeff 2 3 lj/class2/coul/long 36113.149653 0
+pair_coeff 2 4 lj/class2/coul/long 5019.089723 0
+pair_coeff 3 4 lj/class2/coul/long 3157.068999 0
+
+pair_coeff 5 5 lj/cut/coul/long 0.015 3.195
+pair_coeff 6 6 lj/cut/coul/long 0.095 3.898
+pair_coeff 5 6 lj/cut/coul/long 0.038 3.547
+pair_coeff 1 5 lj/cut/coul/long 0.069 3.733
+pair_coeff 1 6 lj/cut/coul/long 0.172 4.084
+pair_coeff 2 5 lj/cut/coul/long 0.038 3.3
+pair_coeff 2 6 lj/cut/coul/long 0.095 3.651
+pair_coeff 3 5 lj/cut/coul/long 0.038 3.3
+pair_coeff 3 6 lj/cut/coul/long 0.095 3.651
+pair_coeff 4 5 lj/cut/coul/long 0.015 3.195
+pair_coeff 4 6 lj/cut/coul/long 0.038 3.547
+
+dielectric 1.0
+kspace_style ewald 1.0e-4
+
+#bond style
+bond_style class2
+#auto bon1 = bond(AType::Si, AType::O_ss);
+#auto bon2 = bond(AType::Si, AType::O_sh);
+#auto bon3 = bond(AType::O_sh, AType::H_os);
+#auto bon4 = bond(AType::C_methane, AType::H_methane);
+bond_coeff 1 1.6104 459.0786 -672.4445 443.3651
+bond_coeff 2 1.6238 431.7825 -799.2202 4446.0952
+bond_coeff 3 0.9458 707.2556 -1531.5564 1603.1003
+bond_coeff 4 1.09 350.0 0.0 0.0
+
+#auto angle1 = angle(AType::O_ss, AType::Si, AType::O_ss);
+#auto angle2 = angle(AType::O_ss, AType::Si, AType::O_sh);
+#auto angle3 = angle(AType::O_sh, AType::Si, AType::O_sh);
+#auto angle4 = angle(AType::Si, AType::O_ss, AType::Si);
+#auto angle5 = angle(AType::Si, AType::O_sh, AType::H_os);
+#auto angle6 = angle(AType::H_methane, AType::C_methane, AType::H_methane);
+
+#angle_style none
+angle_style class2
+angle_coeff 1 112.0200 81.9691 -36.5814 116.9558
+angle_coeff 2 109.9424 91.8675 17.2882 252.8231
+angle_coeff 3 111.3627 58.2199 96.8353 527.5761
+angle_coeff 4 173.7651 20.7015 27.5506 10.9930
+angle_coeff 5 118.9384 20.0134 -33.2675 42.4295
+angle_coeff 6 109.471 100.0 0.0 0.0
+
+angle_coeff 1 bb 151.8742 1.6104 1.6104
+angle_coeff 2 bb 70.6866 1.6104 1.6238
+angle_coeff 3 bb 28.5745 1.6238 1.6238
+angle_coeff 4 bb 151.8742 1.6104 1.6104
+angle_coeff 5 bb 9.6155 1.6238 0.9458
+angle_coeff 6 bb 0 0 0
+
+angle_coeff 1 ba 78.1239 78.1239 1.6104 1.6104
+angle_coeff 2 ba 41.1242 75.6000 1.6104 1.6238
+angle_coeff 3 ba 43.7331 43.7331 1.6238 1.6238
+angle_coeff 4 ba 9.2390 9.2390 1.6104 1.6104
+angle_coeff 5 ba 46.1485 25.1227 1.6238 0.9458
+angle_coeff 6 ba 0 0 0 0
+
+
+#dihedral_style none
+#dihedral style
+dihedral_style class2
+#O_ss Si O_ss Si
+#O_sh Si O_ss Si
+#O_sh Si O_sh H_os
+#O_ss Si O_sh H_os
+dihedral_coeff 1 0.0306 0 -0.0105 0 0.0804 0
+dihedral_coeff 2 0.1277 0 0.0442 0 -0.0009 0
+dihedral_coeff 3 1.7740 0 -0.0772 0 0.0326 0
+dihedral_coeff 4 3.2254 0 -0.2132 0 -0.4145 0
+dihedral_coeff 1 aat -4.5150 112.0200 173.7651
+dihedral_coeff 2 aat 2.3216 109.9424 173.7651
+dihedral_coeff 3 aat -2.9461 111.3627 118.9384
+dihedral_coeff 4 aat 6.4184 109.9424 118.9384
+dihedral_coeff * mbt 0 0 0 0
+dihedral_coeff * ebt 0 0 0 0 0 0 0 0
+dihedral_coeff * bb13 0 0 0
+dihedral_coeff * at  0 0 0 0 0 0 0 0
+
+#improper_style none
+#improper
+#O_ss Si O_ss O_ss
+#O_ss Si O_ss O_sh
+#O_ss Si O_sh O_sh
+#O_sh Si O_sh O_sh
+improper_style class2
+improper_coeff * 0 0
+improper_coeff 1 aa -6.3030 -6.3030 -6.3030 112.0200 112.0200 112.0200
+improper_coeff 2 aa 52.3408 52.3408 86.3954 112.0200 109.9424 109.9424
+improper_coeff 3 aa 60.1802 52.6194 60.1802 109.9424 109.9424 111.3627
+improper_coeff 4 aa 38.4444 38.4444 38.4444 111.3627 111.3627 111.3627
+improper_coeff 5 aa 0 0 0 0 0 0
+
+
+#extra distance 2.0 beyond the force cut-off,
+#bin is the algorithm used to rebuild the neighboring list
+neighbor 2.0 bin 
+#How often the list is rebuit
+#Comment out during minimization
+neigh_modify delay 10 check yes 
+
+#Compute potential energy for each atom
+compute eng all pe/atom 
+#Reduce sum
+compute eatoms all reduce sum c_eng
+
+# ---------- Run Minimization --------------------- 
+reset_timestep 0 
+#allowing the relax of the simulation box, vmax: allowing maximum volume change in one iteration
+#iso: pressure
+#fix 1 all box/relax iso 0.0 vmax 0.001
+
+thermo 10 
+thermo_style custom step pe lx ly lz press pxx pyy pzz c_eatoms
+#Minimization algorithm, cg: conjugate gradient method
+
+#minimize etol ftol maxiter maxeval
+minimize	1.0e-30 1e-30 1000 10000
+
+write_restart SBA15_framework_30_10_100.24_minimized.data
